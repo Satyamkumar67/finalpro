@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload To Win</title>
+</head>
+<body>
+
+     <h3> Posted by: {{ post.user.username }} </h3>
+        <p>[{{ post.created_on }}]</p>
+        <img style="display:inline-block; width:350px; height:300px;"
+             src="{{ post.image_url }}" /><br>
+   <a href = "feeds.html">go to home</a>
+</body>
+</html>
