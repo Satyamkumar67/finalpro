@@ -133,6 +133,40 @@ def comment_view(request):
     else:
         return redirect('/login')
 
+def upload_view(request):
+        user = check_validation(request)
+        if user:
+            if request.method == 'POST':
+                form = UploadForm(request.POST, request.FILES)
+                if form.is_valid():
+                    image = form.cleaned_data.get('image')
+                    concept = 'apple'
+                    post = UploadModel(user=user, image=image, concept=concept, points=0)
+                    post.save()
+
+                    path = str(BASE_DIR + '/' + post.image.url)
+
+                    client = ImgurClient('e2dd69870de1f73', '1b49cedd71bdbd818498a1c3434ed56bfb0ed676')
+                    post.image_url = client.upload_from_path(path, anon=True)['link']
+                    post.save()
+                    app = ClarifaiApp(api_key='{api-key}')
+
+                    # get the general model
+                    model = app.models.get("general-v1.3")
+
+                    # predict with the model
+                response = model.predict_by_url(url=post.image_url)
+                x = response[concept]
+                x = 10 * x
+                post.points = x
+                post.save()
+
+                return redirect('/upload/')
+
+            else:
+                form = PostForm()
+        return render(request, 'get_file.html', {'form': form})
+
 
 
 # For validating the session
